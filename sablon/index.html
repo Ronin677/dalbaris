@@ -87,20 +87,30 @@ footer a{text-decoration:none;border-bottom:1px solid var(--line)}
 footer a:hover{border-color:var(--accent);color:var(--fg)}
 .mail{font-family:var(--mono);color:var(--fg)}
 
-.lb{position:fixed;inset:0;background:rgba(6,6,5,.98);display:flex;flex-direction:column;z-index:50;
+.lb{position:fixed;inset:0;background:#060605;display:flex;flex-direction:column;z-index:50;
   padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-.lb-stage{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;position:relative}
-.lb-stage picture,.lb-stage img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
-.lb-stage img{max-height:calc(100vh - 140px)}
-.lb-bar{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;padding-top:14px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.lb-stage{flex:1;min-height:0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;touch-action:pan-y}
+.lb-stage img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;cursor:zoom-in;user-select:none;-webkit-user-drag:none;
+  transition:opacity .35s;background:#0b0b0a}
+.lb-stage img.yukleniyor{opacity:.001}
+/* 1:1 yakınlaştırma: görüntü gerçek piksel boyutunda, sahne kaydırılarak gezilir */
+.lb-stage.yakin{align-items:flex-start;justify-content:flex-start;overflow:auto;touch-action:pan-x pan-y;cursor:grab;overscroll-behavior:contain;scrollbar-width:none}
+.lb-stage.yakin::-webkit-scrollbar{display:none}
+.lb-stage.yakin.surukle{cursor:grabbing}
+.lb-stage.yakin img{max-width:none;max-height:none;flex:none;cursor:zoom-out;margin:auto}
+.lb-bar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 16px;flex-wrap:wrap;padding-top:14px;font-family:var(--mono);font-size:11px;color:var(--muted)}
 .lb-bar .t{color:var(--fg);font-family:var(--sans);font-size:17px;font-weight:300}
-.lb-ctrl{display:flex;gap:8px}
-.lb button{background:none;border:1px solid var(--line);color:var(--fg);font:400 12px var(--mono);padding:9px 14px;cursor:pointer}
-.lb button:hover{border-color:var(--accent)}
+.lb-durum{color:var(--accent);margin-left:6px}
+.lb-ctrl{display:flex;gap:8px;flex-wrap:wrap}
+.lb button{background:none;border:1px solid var(--line);color:var(--fg);font:400 12px var(--mono);padding:9px 14px;cursor:pointer;min-height:40px}
+.lb button:hover,.lb button[aria-pressed="true"]{border-color:var(--accent)}
+@media (max-width:760px){.lb .uzun{display:none}.lb button{padding:9px 12px}}
 
 @media (max-width:760px){
   .about{grid-template-columns:minmax(0,1fr);gap:20px}
-  nav{gap:16px} section{padding-block:56px}
+  header{padding-block:18px;row-gap:10px}
+  nav{gap:14px 18px} nav a{letter-spacing:.14em;font-size:11px} nav .ig{display:none}
+  section{padding-block:56px}
   .hero h1{letter-spacing:.2em;padding-left:.2em}
   .frame{aspect-ratio:4/3}
 }
@@ -116,7 +126,7 @@ footer a:hover{border-color:var(--accent);color:var(--fg)}
       <a href="#kareler">Kareler</a>
       <a href="#hakkinda">Hakkında</a>
       <a href="#iletisim">İletişim</a>
-      <a href="https://www.instagram.com/brsdal/" target="_blank" rel="noopener">Instagram</a>
+      <a class="ig" href="https://www.instagram.com/brsdal/" target="_blank" rel="noopener">Instagram</a>
     </nav>
   </header>
 
@@ -166,11 +176,13 @@ footer a:hover{border-color:var(--accent);color:var(--fg)}
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Fotoğraf görüntüleyici">
   <div class="lb-stage" id="lbStage"></div>
   <div class="lb-bar">
-    <div><div class="t" id="lbTitle"></div><div id="lbMeta"></div></div>
+    <div><div class="t" id="lbTitle"></div><div><span id="lbMeta"></span><span class="lb-durum" id="lbDurum"></span></div></div>
     <div class="lb-ctrl">
-      <button id="lbPrev" type="button">← Önceki</button>
-      <button id="lbNext" type="button">Sonraki →</button>
-      <button id="lbClose" type="button">Kapat ✕</button>
+      <button id="lbPrev" type="button" aria-label="Önceki">←<span class="uzun"> Önceki</span></button>
+      <button id="lbNext" type="button" aria-label="Sonraki"><span class="uzun">Sonraki </span>→</button>
+      <button id="lbZoom" type="button" aria-pressed="false" title="Gerçek boyutta göster (çift tık)">1:1</button>
+      <button id="lbFull" type="button" title="Tam ekran" hidden>⛶<span class="uzun"> Tam ekran</span></button>
+      <button id="lbClose" type="button" aria-label="Kapat">✕<span class="uzun"> Kapat</span></button>
     </div>
   </div>
 </div>
@@ -182,7 +194,7 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const kareByAd=Object.fromEntries(VERI.kareler.map(k=>[k.ad,k]));
 function resim(k,sizes,{alt="",eager=false,cls=""}={}){
   const set=f=>k.gw.map(w=>`/g/${k.ad}-${w}.${f} ${w}w`).join(", ");
-  return `<picture><source type="image/avif" srcset="${set("avif")}" sizes="${sizes}"><source type="image/webp" srcset="${set("webp")}" sizes="${sizes}">`+
+  return `<picture><source type="image/webp" srcset="${set("webp")}" sizes="${sizes}">`+
     `<img src="/g/${k.ad}.jpg" width="${k.w}" height="${k.h}" alt="${esc(alt)}" ${eager?'fetchpriority="high"':'loading="lazy"'} decoding="async" ${cls?`class="${cls}"`:""}></picture>`;
 }
 const kunye=k=>[k.bilgi,k.lens].filter(Boolean).join(" · ");
@@ -221,24 +233,124 @@ gridEl.addEventListener("click",e=>{const f=e.target.closest(".shot");if(f)ac(+f
 gridEl.addEventListener("keydown",e=>{const f=e.target.closest(".shot");if(f&&(e.key==="Enter"||e.key===" ")){e.preventDefault();ac(+f.dataset.i)}});
 setFilter("hepsi");
 
-// Görüntüleyici
-const lb=document.getElementById("lb"),stage=document.getElementById("lbStage");let idx=0,sonOdak=null;
-function goster(){
-  const k=gorunen[idx];stage.innerHTML=resim(k,"100vw",{alt:k.baslik||seriAd[k.seri],eager:true});
-  document.getElementById("lbTitle").textContent=k.baslik||seriAd[k.seri];
-  document.getElementById("lbMeta").textContent=[seriAd[k.seri].toLocaleUpperCase("tr-TR"),k.kamera,kunye(k),`${idx+1} / ${gorunen.length}`].filter(Boolean).join(" · ");
-  const n=gorunen[(idx+1)%gorunen.length];if(n){const p=new Image();p.src=`/g/${n.ad}-${n.gw.at(-1)}.webp`}
+// Görüntüleyici: önce ekrana yetecek sürüm gelir; büyük ekranda ya da yakınlaştırınca tam çözünürlüğe geçer
+const $=id=>document.getElementById(id);
+const lb=$("lb"),stage=$("lbStage"),durum=$("lbDurum"),zoomBtn=$("lbZoom"),fullBtn=$("lbFull");
+let idx=0,sonOdak=null,yakin=false,img=null,tamYuklu=false,tamYukleniyor=null;
+const dpr=()=>window.devicePixelRatio||1;
+const sigan=k=>{const r=stage.getBoundingClientRect();return Math.round(Math.min(r.width,r.height*k.w/k.h,k.w))};
+function tamaGec(k){
+  if(tamYuklu||tamYukleniyor===k)return;
+  tamYukleniyor=k;durum.textContent="· TAM ÇÖZÜNÜRLÜK YÜKLENİYOR";
+  const p=new Image();p.decoding="async";p.src=`/g/${k.ad}-tam.jpg`;
+  (p.decode?p.decode():new Promise((ok,hata)=>{p.onload=ok;p.onerror=hata})).then(()=>{
+    if(gorunen[idx]!==k)return;
+    img.removeAttribute("srcset");img.removeAttribute("sizes");img.src=p.src;tamYuklu=true;durum.textContent="· TAM ÇÖZÜNÜRLÜK";
+  }).catch(()=>{if(gorunen[idx]===k)durum.textContent=""}).finally(()=>{if(tamYukleniyor===k)tamYukleniyor=null});
 }
-function ac(i){idx=i;sonOdak=document.activeElement;lb.hidden=false;document.body.style.overflow="hidden";goster();document.getElementById("lbClose").focus()}
-function kapat(){lb.hidden=true;document.body.style.overflow="";sonOdak&&sonOdak.focus()}
+function tamGerekirMi(){const k=gorunen[idx];if(k&&!yakin&&sigan(k)*dpr()>k.gw.at(-1)*1.05)tamaGec(k)}
+function goster(){
+  const k=gorunen[idx];yakinCik();tamYuklu=false;durum.textContent="";
+  img=new Image();img.alt=k.baslik||seriAd[k.seri];img.width=k.w;img.height=k.h;img.decoding="async";img.draggable=false;
+  img.className="yukleniyor";img.onload=()=>img.classList.remove("yukleniyor");
+  img.sizes=sigan(k)+"px";img.srcset=k.gw.map(w=>`/g/${k.ad}-${w}.webp ${w}w`).join(", ");img.src=`/g/${k.ad}.jpg`;
+  stage.replaceChildren(img);
+  $("lbTitle").textContent=k.baslik||seriAd[k.seri];
+  $("lbMeta").textContent=[seriAd[k.seri].toLocaleUpperCase("tr-TR"),k.kamera,kunye(k),`${k.w} × ${k.h} px`,`${idx+1} / ${gorunen.length}`].filter(Boolean).join(" · ");
+  const tek=gorunen.length<2;$("lbPrev").hidden=tek;$("lbNext").hidden=tek;
+  tamGerekirMi();
+  const n=gorunen[(idx+1)%gorunen.length];if(n&&n!==k){const p=new Image();p.sizes=sigan(n)+"px";p.srcset=n.gw.map(w=>`/g/${n.ad}-${w}.webp ${w}w`).join(", ")}
+  if(!lb.hidden)history.replaceState(history.state,"",`#kare=${encodeURIComponent(k.ad)}`);
+}
+// 1:1 — bir görüntü pikseli bir ekran pikseline; küçük kalırsa en az 2 kat
+function yakinGir(ox=.5,oy=.5){
+  const k=gorunen[idx],r=img.getBoundingClientRect();
+  const w=Math.min(k.w,Math.max(k.w/dpr(),r.width*2));
+  if(w<=r.width*1.05)return;
+  const h=w*k.h/k.w;yakin=true;stage.classList.add("yakin");zoomBtn.setAttribute("aria-pressed","true");
+  img.style.width=w+"px";img.style.height=h+"px";
+  const s=stage.getBoundingClientRect();stage.scrollLeft=ox*w-s.width/2;stage.scrollTop=oy*h-s.height/2;
+  tamaGec(k);
+}
+function yakinCik(){
+  if(!yakin)return;yakin=false;stage.classList.remove("yakin","surukle");zoomBtn.setAttribute("aria-pressed","false");
+  if(img){img.style.width="";img.style.height=""}stage.scrollLeft=stage.scrollTop=0;
+}
+function yakinDegistir(e){
+  if(yakin)return yakinCik();
+  if(e&&img){const r=img.getBoundingClientRect();yakinGir((e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height)}else yakinGir();
+}
+function ac(i){
+  idx=i;sonOdak=document.activeElement;lb.hidden=false;document.body.style.overflow="hidden";
+  if(!history.state?.lb)history.pushState({lb:1},"",`#kare=${encodeURIComponent(gorunen[i].ad)}`);
+  goster();$("lbClose").focus();
+}
+function kapatGercek(){
+  yakinCik();lb.hidden=true;document.body.style.overflow="";stage.replaceChildren();
+  if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+  if(location.hash.startsWith("#kare="))history.replaceState(null,"",location.pathname+location.search);
+  sonOdak&&sonOdak.focus();
+}
+// Telefonda "geri" tuşu görüntüleyiciyi kapatır, siteden çıkmaz
+function kapat(){if(history.state?.lb)history.back();else kapatGercek()}
+addEventListener("popstate",()=>{if(!lb.hidden)kapatGercek()});
 const adim=d=>{idx=(idx+d+gorunen.length)%gorunen.length;goster()};
-document.getElementById("lbPrev").onclick=()=>adim(-1);
-document.getElementById("lbNext").onclick=()=>adim(1);
-document.getElementById("lbClose").onclick=kapat;
-stage.addEventListener("click",e=>{if(e.target===stage)kapat()});
-document.addEventListener("keydown",e=>{if(lb.hidden)return;if(e.key==="Escape")kapat();if(e.key==="ArrowRight")adim(1);if(e.key==="ArrowLeft")adim(-1)});
-let tx=null;stage.addEventListener("touchstart",e=>tx=e.touches[0].clientX,{passive:true});
-stage.addEventListener("touchend",e=>{if(tx==null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>40)adim(dx<0?1:-1);tx=null});
+$("lbPrev").onclick=()=>adim(-1);
+$("lbNext").onclick=()=>adim(1);
+$("lbClose").onclick=kapat;
+zoomBtn.onclick=()=>yakinDegistir();
+if(document.fullscreenEnabled&&lb.requestFullscreen){
+  fullBtn.hidden=false;
+  fullBtn.onclick=()=>document.fullscreenElement?document.exitFullscreen():lb.requestFullscreen().catch(()=>{});
+  document.addEventListener("fullscreenchange",()=>fullBtn.setAttribute("aria-pressed",!!document.fullscreenElement));
+}
+addEventListener("resize",()=>{if(!lb.hidden&&img&&!yakin){img.sizes=sigan(gorunen[idx])+"px";tamGerekirMi()}});
+
+// Fare: tıkla = yakınlaştır/uzaklaştır, yakındayken sürükle = gez. Dokunmatik: çift dokun / iki parmakla aç = yakınlaştır, kaydır = sonraki
+let surukle=null,tasindi=false,sonDokunus=0,tx=null,ty=null,parmak=null;
+stage.addEventListener("pointerdown",e=>{
+  tasindi=false;
+  if(e.pointerType==="mouse"&&yakin&&e.button===0){surukle={x:e.clientX,y:e.clientY,l:stage.scrollLeft,t:stage.scrollTop};stage.classList.add("surukle");e.preventDefault()}
+});
+addEventListener("pointermove",e=>{
+  if(!surukle)return;const dx=e.clientX-surukle.x,dy=e.clientY-surukle.y;
+  if(Math.abs(dx)+Math.abs(dy)>4)tasindi=true;stage.scrollLeft=surukle.l-dx;stage.scrollTop=surukle.t-dy;
+});
+addEventListener("pointerup",()=>{if(surukle){surukle=null;stage.classList.remove("surukle")}});
+stage.addEventListener("click",e=>{
+  if(tasindi){tasindi=false;return}
+  if(e.target===img){if(!e.pointerType||e.pointerType==="mouse")yakinDegistir(e);return}
+  if(!yakin)kapat();
+});
+stage.addEventListener("touchstart",e=>{
+  if(e.touches.length===2){const[a,b]=e.touches;parmak=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);tx=null;return}
+  tx=e.touches[0].clientX;ty=e.touches[0].clientY;
+},{passive:true});
+stage.addEventListener("touchmove",e=>{
+  if(parmak&&e.touches.length===2&&!yakin){
+    const[a,b]=e.touches,d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+    if(d>parmak*1.25){parmak=null;const r=img.getBoundingClientRect();yakinGir(((a.clientX+b.clientX)/2-r.left)/r.width,((a.clientY+b.clientY)/2-r.top)/r.height)}
+  }
+},{passive:true});
+stage.addEventListener("touchend",e=>{
+  if(e.touches.length)return;parmak=null;
+  const t=e.changedTouches[0];
+  if(tx!=null&&!yakin){const dx=t.clientX-tx,dy=t.clientY-ty;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){tx=null;sonDokunus=0;return adim(dx<0?1:-1)}}
+  const simdi=Date.now();
+  if(e.target===img&&tx!=null&&Math.abs(t.clientX-tx)<10&&Math.abs(t.clientY-ty)<10){
+    if(simdi-sonDokunus<320){sonDokunus=0;e.preventDefault();yakinDegistir(t)}else sonDokunus=simdi;
+  }
+  tx=null;
+});
+document.addEventListener("keydown",e=>{
+  if(lb.hidden)return;
+  if(e.key==="Escape"){yakin?yakinCik():kapat()}
+  else if(e.key==="ArrowRight"&&!yakin)adim(1);
+  else if(e.key==="ArrowLeft"&&!yakin)adim(-1);
+  else if(e.key==="z"||e.key==="Z")yakinDegistir();
+});
+// Bağlantıyla gelen kare (#kare=...) doğrudan açılır
+{const m=location.hash.match(/^#kare=(.+)$/);if(m){const i=gorunen.findIndex(k=>k.ad===decodeURIComponent(m[1]));if(i>=0){history.replaceState(null,"",location.pathname);ac(i)}}}
 document.addEventListener("contextmenu",e=>{if(e.target.tagName==="IMG")e.preventDefault()});
 </script>
 </body>

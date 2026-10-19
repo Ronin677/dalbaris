@@ -1,0 +1,15 @@
+// dalbaris.com — Cloudflare Workers statik site
+// Cloudflare panelinde: Derleme komutu `npm run build`, Yayın komutu `npx wrangler deploy`
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "dalbaris",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    { "pattern": "dalbaris.com", "custom_domain": true },
+    { "pattern": "www.dalbaris.com", "custom_domain": true }
+  ]
+}

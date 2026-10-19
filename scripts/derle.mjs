@@ -4,12 +4,14 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 import exifr from "exifr";
+import os from "node:os";
 
 const KOK = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const KAYNAK = path.join(KOK, "fotograflar");
 const CIKTI = path.join(KOK, "dist");
 const GORSEL = path.join(CIKTI, "g");
 const GENISLIKLER = [640, 1280, 2400];
+const UZUN_SINIR = 4000; // tam çözünürlük sürümünün uzun kenar sınırı (piksel)
 const UZANTILAR = new Set([".jpg", ".jpeg", ".png", ".tif", ".tiff", ".webp", ".heic", ".avif"]);
 
 const trKucuk = s => s.toLocaleLowerCase("tr-TR");
@@ -47,6 +49,15 @@ async function seriBilgisi(klasor, ad) {
   } catch { return { ad, aciklama: "" }; }
 }
 
+// Sırayı koruyarak en fazla N işi aynı anda çalıştırır
+async function havuz(liste, is, n = Math.max(2, os.availableParallelism?.() ?? os.cpus().length)) {
+  const sonuc = new Array(liste.length); let sira = 0;
+  await Promise.all(Array.from({ length: Math.min(n, liste.length) }, async () => {
+    while (sira < liste.length) { const i = sira++; sonuc[i] = await is(liste[i], i); }
+  }));
+  return sonuc;
+}
+
 async function main() {
   await fs.rm(CIKTI, { recursive: true, force: true });
   await fs.mkdir(GORSEL, { recursive: true });
@@ -62,8 +73,8 @@ async function main() {
     const bilgi = await seriBilgisi(klasor, adHam.charAt(0).toLocaleUpperCase("tr-TR") + adHam.slice(1));
     const id = slug(bilgi.ad) || slug(k.name);
     const dosyalar = (await fs.readdir(klasor)).filter(f => UZANTILAR.has(path.extname(f).toLowerCase())).sort((a, b) => a.localeCompare(b, "tr"));
-    const kareler = [];
-    for (const f of dosyalar) {
+    // Kareler paralel işlenir (çekirdek sayısı kadar), sıra korunur
+    const kareler = await havuz(dosyalar, async (f, i) => {
       const kaynak = path.join(klasor, f);
       const temel = path.parse(f).name;
       let e = null;
@@ -72,26 +83,36 @@ async function main() {
       const baslikMeta = e && (e.title?.value || e.title || e.ObjectName || e.Headline);
       const baslik = (typeof baslikMeta === "string" && baslikMeta.trim()) || dosyaAdindanBaslik(temel) || "";
       const aciklamaMeta = e && (e.description?.value || e.description || e.Caption || e.ImageDescription);
-      const ad = `${id}-${slug(temel) || kareler.length}`;
-      // rotate(): EXIF yönünü uygular. sharp varsayılan olarak tüm meta verileri (GPS dahil) çıktıdan siler.
-      const { info: { width: W, height: H } } = await sharp(kaynak, { failOn: "none" }).rotate().toBuffer({ resolveWithObject: true });
-      const genislikler = [...new Set(GENISLIKLER.map(w => Math.min(w, W)))];
-      for (const w of genislikler) {
-        const temelG = sharp(kaynak, { failOn: "none" }).rotate().resize({ width: w, withoutEnlargement: true }).toColorspace("srgb");
-        await temelG.clone().webp({ quality: w >= 2400 ? 86 : 80 }).toFile(path.join(GORSEL, `${ad}-${w}.webp`));
-        await temelG.clone().avif({ quality: w >= 2400 ? 62 : 55, effort: 4 }).toFile(path.join(GORSEL, `${ad}-${w}.avif`));
-      }
-      await sharp(kaynak, { failOn: "none" }).rotate().resize({ width: 1600, withoutEnlargement: true }).toColorspace("srgb")
-        .jpeg({ quality: 84, mozjpeg: true }).toFile(path.join(GORSEL, `${ad}.jpg`));
-      kareler.push({
+      const ad = `${id}-${slug(temel) || i}`;
+      // rotate(): EXIF yönünü uygular. sharp varsayılan olarak tüm meta verileri (GPS dahil) çıktıdan siler;
+      // withIccProfile("srgb") yalnız renk profilini geri gömer ki renkler her ekranda doğru görünsün.
+      // Tek çözümleme: döndürülmüş, sRGB'ye çevrilmiş ham piksel, tüm boyutlar bundan üretilir.
+      const { data: ham, info } = await sharp(kaynak, { failOn: "none", limitInputPixels: false })
+        .rotate().toColorspace("srgb").removeAlpha().raw().toBuffer({ resolveWithObject: true });
+      const pikselden = () => sharp(ham, { raw: { width: info.width, height: info.height, channels: info.channels } });
+      // Tam çözünürlük: uzun kenar UZUN_SINIR'a kadar küçültülür (büyütülmez)
+      const oran = Math.min(1, UZUN_SINIR / Math.max(info.width, info.height));
+      const W = Math.round(info.width * oran), H = Math.round(info.height * oran);
+      const genislikler = [...new Set(GENISLIKLER.filter(w => w < W).concat(Math.min(GENISLIKLER.at(-1), W)))].sort((a, b) => a - b);
+      await Promise.all([
+        ...genislikler.map(w => pikselden().resize({ width: w, kernel: "lanczos3" }).withIccProfile("srgb")
+          .webp({ quality: w >= 2400 ? 90 : 82, smartSubsample: true }).toFile(path.join(GORSEL, `${ad}-${w}.webp`))),
+        // Büyük görüntüleyicideki "en büyük hal": JPEG 92, renk inceltmesi yok (4:4:4) — renk kenarları da korunur
+        pikselden().resize({ width: W, kernel: "lanczos3" }).withIccProfile("srgb")
+          .jpeg({ quality: 92, chromaSubsampling: "4:4:4", optimiseCoding: true }).toFile(path.join(GORSEL, `${ad}-tam.jpg`)),
+        // Eski tarayıcılar ve paylaşım önizlemesi için
+        pikselden().resize({ width: Math.min(1600, W), kernel: "lanczos3" }).withIccProfile("srgb")
+          .jpeg({ quality: 84, mozjpeg: true }).toFile(path.join(GORSEL, `${ad}.jpg`))
+      ]);
+      console.log(`✓ ${k.name}/${f}`);
+      return {
         ad, w: W, h: H, gw: genislikler, baslik,
         aciklama: typeof aciklamaMeta === "string" ? aciklamaMeta.trim() : "",
         bilgi: bilgiC.satir, kamera: bilgiC.kamera, lens: bilgiC.lens,
         tarih: bilgiC.tarih ? bilgiC.tarih.toISOString() : null,
         kapak: /kapak/i.test(temel)
-      });
-      console.log(`✓ ${k.name}/${f}`);
-    }
+      };
+    });
     if (!kareler.length) continue;
     const tarihler = kareler.map(x => x.tarih).filter(Boolean).sort();
     seriler.push({ id, ad: bilgi.ad, aciklama: bilgi.aciklama, kareler, son: tarihler.at(-1) || null, ilk: tarihler[0] || null });
