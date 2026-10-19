@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BARIŞ DAL — Fotoğraf</title>
+<meta name="description" content="Barış Dal'ın fotoğrafları: gezdiği yerler, yolda karşılaştığı insanlar ve ışık.">
+<meta name="theme-color" content="#0b0b0a">
+<meta property="og:type" content="website">
+<meta property="og:title" content="BARIŞ DAL">
+<meta property="og:description" content="Yollar, yerler, insanlar.">
+<meta property="og:url" content="https://dalbaris.com/">
+<meta property="og:image" content="__KAPAK_GORSEL__">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://dalbaris.com/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&family=IBM+Plex+Mono&display=swap">
+<style>
+/* Sinema perdesi: 2.39:1 letterbox açılış, seriler, sessiz kare ızgarası. Tek koyu dünya. */
+:root{
+  --bg:#0b0b0a;--bg-2:#141412;--fg:#ece8e1;--muted:#8d887f;--line:#2a2825;--accent:#c9a46a;
+  --sans:"Montserrat","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono","SFMono-Regular",Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-weight:300;font-size:16px;line-height:1.6;
+  padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px))}
+a{color:inherit}
+img{max-width:100%;display:block}
+[hidden]{display:none!important}
+.wrap{max-width:1360px;margin:0 auto}
+:focus-visible{outline:1px solid var(--accent);outline-offset:4px}
+
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:22px;flex-wrap:wrap}
+.mark{letter-spacing:.42em;font-size:14px;font-weight:400;text-decoration:none}
+nav{display:flex;gap:28px;flex-wrap:wrap}
+nav a{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;color:var(--muted);transition:color .2s}
+nav a:hover{color:var(--fg)}
+
+.hero{position:relative;margin-top:8px}
+.frame{position:relative;aspect-ratio:2.39/1;max-width:100%;overflow:hidden;background:radial-gradient(ellipse at 60% 40%,#3a3328,#0f0e0c 70%)}
+.frame img{width:100%;height:100%;object-fit:cover;animation:in 1.6s ease both}
+.frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.55))}
+@keyframes in{from{opacity:.001;transform:scale(1.03)}to{opacity:1;transform:none}}
+.hero h1{position:absolute;left:0;right:0;bottom:11%;z-index:1;text-align:center;margin:0;font-weight:200;
+  font-size:clamp(28px,7.5vw,112px);letter-spacing:.32em;padding-left:.32em;text-shadow:0 2px 40px rgba(0,0,0,.5)}
+.slate{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:14px;border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted)}
+.slate b{color:var(--accent);font-weight:400}
+
+section{padding-block:80px}
+.eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin:0 0 12px;font-weight:400}
+h2{font-weight:300;font-size:clamp(28px,4vw,46px);line-height:1.1;margin:0 0 36px;text-wrap:balance}
+
+.series{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:28px}
+.serie{cursor:pointer;background:none;border:0;padding:0;color:inherit;text-align:left;font:inherit}
+.serie .thumb{aspect-ratio:4/5;overflow:hidden;background:var(--bg-2)}
+.serie img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.7,.2,1),filter .6s;filter:brightness(.92)}
+.serie:hover img,.serie:focus-visible img{transform:scale(1.04);filter:brightness(1.03)}
+.serie h3{font-weight:400;font-size:20px;letter-spacing:.04em;margin:16px 0 2px}
+.serie p{margin:0;font-size:13px;color:var(--muted)}
+
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin:-12px 0 28px}
+.filters button{background:none;border:1px solid var(--line);color:var(--muted);font:500 11px var(--sans);letter-spacing:.16em;text-transform:uppercase;padding:9px 16px;cursor:pointer;transition:all .2s}
+.filters button[aria-pressed="true"],.filters button:hover{border-color:var(--accent);color:var(--fg)}
+.grid{columns:3 300px;column-gap:12px}
+.shot{break-inside:avoid;margin:0 0 12px;cursor:zoom-in;position:relative;background:var(--bg-2)}
+.shot img{width:100%;height:auto}
+.shot figcaption{position:absolute;inset:auto 0 0 0;padding:32px 14px 12px;background:linear-gradient(transparent,rgba(0,0,0,.72));
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:#d8d2c7;opacity:0;transition:opacity .3s}
+.shot:hover figcaption,.shot:focus-visible figcaption{opacity:1}
+@media (hover:none){.shot figcaption{opacity:1;background:linear-gradient(transparent,rgba(0,0,0,.55))}}
+
+.bos{border:1px solid var(--line);padding:56px 24px;text-align:center;color:var(--muted)}
+.bos strong{display:block;color:var(--fg);font-weight:300;font-size:22px;margin-bottom:6px}
+
+.about{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:start;border-top:1px solid var(--line)}
+.about p{max-width:60ch;color:#cfc9bf;margin:0 0 16px}
+.kit{font-family:var(--mono);font-size:12px;color:var(--muted);display:grid;gap:6px;margin-top:24px}
+.kit b{color:var(--fg);font-weight:400}
+footer{border-top:1px solid var(--line);padding-block:40px 56px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+footer a{text-decoration:none;border-bottom:1px solid var(--line)}
+footer a:hover{border-color:var(--accent);color:var(--fg)}
+.mail{font-family:var(--mono);color:var(--fg)}
+
+.lb{position:fixed;inset:0;background:rgba(6,6,5,.98);display:flex;flex-direction:column;z-index:50;
+  padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.lb-stage{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;position:relative}
+.lb-stage picture,.lb-stage img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
+.lb-stage img{max-height:calc(100vh - 140px)}
+.lb-bar{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;padding-top:14px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.lb-bar .t{color:var(--fg);font-family:var(--sans);font-size:17px;font-weight:300}
+.lb-ctrl{display:flex;gap:8px}
+.lb button{background:none;border:1px solid var(--line);color:var(--fg);font:400 12px var(--mono);padding:9px 14px;cursor:pointer}
+.lb button:hover{border-color:var(--accent)}
+
+@media (max-width:760px){
+  .about{grid-template-columns:minmax(0,1fr);gap:20px}
+  nav{gap:16px} section{padding-block:56px}
+  .hero h1{letter-spacing:.2em;padding-left:.2em}
+  .frame{aspect-ratio:4/3}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="mark" href="#top">BARIŞ DAL</a>
+    <nav aria-label="Ana menü">
+      <a href="#seriler">Seriler</a>
+      <a href="#kareler">Kareler</a>
+      <a href="#hakkinda">Hakkında</a>
+      <a href="#iletisim">İletişim</a>
+      <a href="https://www.instagram.com/brsdal/" target="_blank" rel="noopener">Instagram</a>
+    </nav>
+  </header>
+
+  <div class="hero" id="top">
+    <div class="frame" id="heroFrame"></div>
+    <h1>BARIŞ DAL</h1>
+  </div>
+  <div class="slate">
+    <span>FOTOĞRAF · YOLLAR, YERLER, İNSANLAR</span>
+    <span><b>●</b> SON EKLENEN: __SON_EKLENEN__</span>
+  </div>
+
+  <section id="seriler">
+    <p class="eyebrow">Seriler</p>
+    <h2>Her seri bir yolculuk</h2>
+    <div class="series" id="seriesEl"></div>
+  </section>
+
+  <section id="kareler">
+    <p class="eyebrow">Kareler</p>
+    <h2>Seçilmiş kareler</h2>
+    <div class="filters" role="group" aria-label="Seriye göre süz" id="filters"></div>
+    <div class="grid" id="gridEl"></div>
+  </section>
+
+  <section class="about" id="hakkinda">
+    <div>
+      <p class="eyebrow">Hakkında</p>
+      <h2>Gördüğümü<br>saklıyorum</h2>
+    </div>
+    <div>
+      <p>Gezdiğim yerleri, yolda karşılaştığım insanları ve ışığın bir anlığına her şeyi değiştirdiği anları fotoğraflıyorum. Bu sayfa o anların arşivi.</p>
+      <p>Kareleri Lightroom'da ve Leica uygulamalarında kendim işliyorum. Yeni seriler çektikçe buraya ekleniyor.</p>
+      <div class="kit">
+        <span>KAMERA <b>Leica</b></span>
+        <span>İŞLEME <b>Lightroom · Leica Photos · Leica LUX</b></span>
+      </div>
+    </div>
+  </section>
+
+  <footer id="iletisim">
+    <span>© __YIL__ Barış Dal · Tüm fotoğrafların hakları saklıdır.</span>
+    <span>İletişim: <a class="mail" href="mailto:ben@dalbaris.com">ben@dalbaris.com</a> · <a href="https://www.instagram.com/brsdal/" target="_blank" rel="noopener">Instagram @brsdal</a></span>
+  </footer>
+</div>
+
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Fotoğraf görüntüleyici">
+  <div class="lb-stage" id="lbStage"></div>
+  <div class="lb-bar">
+    <div><div class="t" id="lbTitle"></div><div id="lbMeta"></div></div>
+    <div class="lb-ctrl">
+      <button id="lbPrev" type="button">← Önceki</button>
+      <button id="lbNext" type="button">Sonraki →</button>
+      <button id="lbClose" type="button">Kapat ✕</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const VERI=/*__VERI__*/null;
+const seriAd=Object.fromEntries(VERI.seriler.map(s=>[s.id,s.ad]));
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const kareByAd=Object.fromEntries(VERI.kareler.map(k=>[k.ad,k]));
+function resim(k,sizes,{alt="",eager=false,cls=""}={}){
+  const set=f=>k.gw.map(w=>`/g/${k.ad}-${w}.${f} ${w}w`).join(", ");
+  return `<picture><source type="image/avif" srcset="${set("avif")}" sizes="${sizes}"><source type="image/webp" srcset="${set("webp")}" sizes="${sizes}">`+
+    `<img src="/g/${k.ad}.jpg" width="${k.w}" height="${k.h}" alt="${esc(alt)}" ${eager?'fetchpriority="high"':'loading="lazy"'} decoding="async" ${cls?`class="${cls}"`:""}></picture>`;
+}
+const kunye=k=>[k.bilgi,k.lens].filter(Boolean).join(" · ");
+
+// Açılış
+const kapak=VERI.kapak&&kareByAd[VERI.kapak];
+if(kapak)document.getElementById("heroFrame").innerHTML=resim(kapak,"100vw",{alt:kapak.baslik||"Açılış karesi",eager:true});
+
+// Seriler
+const seriesEl=document.getElementById("seriesEl");
+if(!VERI.seriler.length){
+  seriesEl.outerHTML=`<div class="bos"><strong>İlk seriler yakında</strong>Yeni kareler hazırlanıyor.</div>`;
+  document.getElementById("kareler").hidden=true;
+}
+VERI.seriler.forEach(s=>{
+  const b=document.createElement("button");b.className="serie";b.type="button";
+  const yil=[s.ilk,s.son].filter(Boolean).map(d=>new Date(d).getFullYear());
+  const yilTxt=yil.length?(yil[0]===yil.at(-1)?yil[0]:`${yil[0]}–${yil.at(-1)}`):"";
+  b.innerHTML=`<div class="thumb">${resim(kareByAd[s.kapak],"(max-width:700px) 100vw, 33vw",{alt:s.ad})}</div><h3>${esc(s.ad)}</h3><p>${[s.aciklama,yilTxt,s.adet+" kare"].filter(Boolean).map(esc).join(" · ")}</p>`;
+  b.onclick=()=>{setFilter(s.id);document.getElementById("kareler").scrollIntoView()};
+  seriesEl.append(b);
+});
+
+// Kareler
+const filters=document.getElementById("filters"),gridEl=document.getElementById("gridEl");
+let gorunen=[];
+if(VERI.seriler.length>1)[["hepsi","Tümü"],...VERI.seriler.map(s=>[s.id,s.ad])].forEach(([id,label])=>{
+  const b=document.createElement("button");b.type="button";b.textContent=label;b.dataset.id=id;b.onclick=()=>setFilter(id);filters.append(b);
+});
+function setFilter(id){
+  filters.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.id===id));
+  gorunen=VERI.kareler.filter(k=>id==="hepsi"||k.seri===id);
+  gridEl.innerHTML=gorunen.map((k,i)=>`<figure class="shot" tabindex="0" role="button" data-i="${i}" aria-label="${esc(k.baslik||seriAd[k.seri])}">${resim(k,"(max-width:700px) 100vw, 33vw",{alt:k.baslik||seriAd[k.seri]})}<figcaption>${esc([(k.baslik||"").toLocaleUpperCase("tr-TR"),kunye(k)].filter(Boolean).join(" · ")||seriAd[k.seri])}</figcaption></figure>`).join("");
+}
+gridEl.addEventListener("click",e=>{const f=e.target.closest(".shot");if(f)ac(+f.dataset.i)});
+gridEl.addEventListener("keydown",e=>{const f=e.target.closest(".shot");if(f&&(e.key==="Enter"||e.key===" ")){e.preventDefault();ac(+f.dataset.i)}});
+setFilter("hepsi");
+
+// Görüntüleyici
+const lb=document.getElementById("lb"),stage=document.getElementById("lbStage");let idx=0,sonOdak=null;
+function goster(){
+  const k=gorunen[idx];stage.innerHTML=resim(k,"100vw",{alt:k.baslik||seriAd[k.seri],eager:true});
+  document.getElementById("lbTitle").textContent=k.baslik||seriAd[k.seri];
+  document.getElementById("lbMeta").textContent=[seriAd[k.seri].toLocaleUpperCase("tr-TR"),k.kamera,kunye(k),`${idx+1} / ${gorunen.length}`].filter(Boolean).join(" · ");
+  const n=gorunen[(idx+1)%gorunen.length];if(n){const p=new Image();p.src=`/g/${n.ad}-${n.gw.at(-1)}.webp`}
+}
+function ac(i){idx=i;sonOdak=document.activeElement;lb.hidden=false;document.body.style.overflow="hidden";goster();document.getElementById("lbClose").focus()}
+function kapat(){lb.hidden=true;document.body.style.overflow="";sonOdak&&sonOdak.focus()}
+const adim=d=>{idx=(idx+d+gorunen.length)%gorunen.length;goster()};
+document.getElementById("lbPrev").onclick=()=>adim(-1);
+document.getElementById("lbNext").onclick=()=>adim(1);
+document.getElementById("lbClose").onclick=kapat;
+stage.addEventListener("click",e=>{if(e.target===stage)kapat()});
+document.addEventListener("keydown",e=>{if(lb.hidden)return;if(e.key==="Escape")kapat();if(e.key==="ArrowRight")adim(1);if(e.key==="ArrowLeft")adim(-1)});
+let tx=null;stage.addEventListener("touchstart",e=>tx=e.touches[0].clientX,{passive:true});
+stage.addEventListener("touchend",e=>{if(tx==null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>40)adim(dx<0?1:-1);tx=null});
+document.addEventListener("contextmenu",e=>{if(e.target.tagName==="IMG")e.preventDefault()});
+</script>
+</body>
+</html>

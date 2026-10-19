@@ -1,0 +1,13 @@
+{
+  "name": "dalbaris",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/derle.mjs"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "exifr": "^7.1.3",
+    "sharp": "^0.33.5"
+  }
+}
