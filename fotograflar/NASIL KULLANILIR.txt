@@ -1,41 +1,37 @@
 dalbaris.com — FOTOĞRAF KLASÖRÜ
 
-Bu klasöre ne koyarsan birkaç dakika içinde dalbaris.com'da görünür.
-Klasör iCloud Drive'da: Mac'in masaüstünde de, iPhone'da da aynı klasör.
-Mac mini her dakika bakar, yenileri kendiliğinden gönderir, bitince bildirim çıkar.
+Masaüstündeki bu klasör iCloud Drive ile iPhone arasında ortaktır. Buraya kaydettiğin fotoğraflar Mac tarafından otomatik gönderilir.
 
-──────── SERİ = KLASÖR ────────
-Her seri bir klasör. Örnek:
+HİKÂYE KLASÖRLERİ
+Her yolculuk için ana klasörün içinde bir klasör aç:
 
-  01_karadeniz/
-     01_ayder-sabahi_kapak.jpg   ← adında "kapak" geçen kare kapak olur
-     02_yayla-evleri.jpg
-     seri.txt                    ← isteğe bağlı: 1. satır seri adı, 2. satır kısa açıklama
+  01_Fas/
+    01_marrakesh-koutoubia-minaresi.jpg
+    02_essaouira-balik-limani.jpg
+    03_essaouira-limaninda-karsilasma.jpg
+    04_essaouira-sisli-surlar_kapak.jpg
+    hikaye.txt
 
-Baştaki numaralar sadece sıralama içindir, sitede görünmez.
-En yeni çekilen seri sitede en üstte çıkar.
+Klasörleri doğrudan ana klasörün içine aç; hikâyelerin içine başka klasör açma.
+İstersen hikaye.txt ekle:
+  1. satır: Sitede görünecek başlık
+  2. satır: Kısa açıklama
+Eski seri.txt dosyaları da çalışır.
 
-──────── MAC'TEN ────────
-Lightroom: JPEG · kalite 95 · sRGB · uzun kenar 4000 px ile dışa aktar,
-seri klasörüne sürükle.
+Tek tek seçtiğin fotoğrafları ana klasöre koy. Bunlar sitedeki “Seçkiler” grubunda görünür.
+Numaralı dosya adları sıralamayı belirler. Kapak olacak dosyanın adında “kapak” yazması yeterli.
 
-──────── iPHONE'DAN ────────
-Hangi uygulamadan olursa olsun yol aynı:
-  Paylaş simgesi → "Dosyalara Kaydet" → iCloud Drive → dalbaris Fotoğraflar → seri klasörü → Kaydet
-(Yeni seri için o ekranda sağ üstteki klasör simgesiyle yeni klasör aç.)
+TELEFONDAN YÜKLEME
+Her uygulamada son adım: Paylaş → Dosyalara Kaydet → iCloud Drive → dalbaris Fotoğraflar → ilgili hikâye klasörü.
 
-• Lightroom (telefon): fotoğrafı aç → Paylaş → "Farklı Dışa Aktar…"
-    Dosya türü JPG · Boyut: En büyük · Kalite 95-100 · Renk alanı sRGB → ✓
-    → çıkan menüde "Dosyalara Kaydet"
-• Leica FOTOS: fotoğrafı seç → Paylaş → JPG seç → "Dosyalara Kaydet"
-• Leica LUX: fotoğrafı aç → Paylaş → "Dosyalara Kaydet"
-• Fotoğraflar uygulamasındaki bir kare: Paylaş → "Dosyalara Kaydet"
+• Lightroom Mobile: Paylaş → Farklı Dışa Aktar → JPG, kalite 95, sRGB, En Büyük Boyut veya uzun kenar 4000 px → Dosyalara Kaydet.
+• Leica FOTOS: dışa aktarırken JPG seç; DNG ham dosyayı Lightroom’dan JPG olarak çıkar.
+• Leica LUX / iPhone Fotoğraflar: Paylaş → Dosyalara Kaydet. HEIC/HEIF Mac’te JPG’ye çevrilir.
 
-Tam boy gelen fotoğraflar Mac'te otomatik olarak 4000 px'e küçültülür,
-HEIC gelirse JPEG'e çevrilir. Siteye her zaman en iyi kalite gider.
+BİLGİSAYARDAN YÜKLEME
+Lightroom’dan JPG, kalite 95, sRGB ve uzun kenar 4000 px ile dışa aktar; hikâye klasörüne sürükle. Daha büyük dosya gönderirsen sistem özgün dosyayı korur ve siteye giden kopyayı 4000 px’e indirir.
 
-──────── SİLMEK ────────
-Fotoğrafı bu klasörden sil, siteden de kalkar.
+OTOMATİK KALİTE
+Site 640, 1280 ve 2400 px WebP kopyaları; eski tarayıcılar için JPG; 1:1 yakınlaştırma için en fazla 4000 px yüksek kaliteli JPG üretir. Sayfa ekrana uygun WebP boyutunu seçer. Yalnız geçici gönderim kopyaları dönüştürülür; iCloud’daki özgün fotoğraflar yerinde kalır. DNG/RAW siteye gönderilmez. Yayın görsellerinden EXIF/GPS bilgileri silinir.
 
-Not: DNG (ham) dosyalar gönderilmez; JPEG olarak çıkar.
-Bu dosya sitede görünmez.
+Fotoğrafı veya klasörü buradan silersen site sürümü sonraki yayında kalkar. iCloud eşitlemesi bittikten sonra gönderim birkaç dakika sürebilir.

@@ -1,60 +1,56 @@
-# dalbaris.com — Fotoğraf nasıl eklenir
+# dalbaris.com — Fotoğraf yükleme
 
-Site, `fotograflar/` klasöründeki fotoğraflardan kendini otomatik kurar. Yeni fotoğraf yükleyince Cloudflare siteyi birkaç dakikada yeniden yayınlar.
+Site adını **Barış Dal — Görsel Hikâyeler** olarak kullanıyorum. Profesyonel portfolyolarda sık görülen kısa, fotoğrafçının kendi adıyla kurulu marka yapısını izliyor; gezinmede “Hikâyeler” ve “Seçkiler” kullanılıyor. Carlton Soohoo da işlerini “Galleries” ve “Selected Work” olarak ayırıyor.
 
-## Kalite nasıl korunuyor
+## Masaüstü ve iPhone klasörü
 
-Her fotoğraftan yayın sırasında otomatik olarak birkaç sürüm üretilir:
+Masaüstündeki **dalbaris Fotoğraflar** klasörü iCloud Drive’dadır; iPhone ve Mac aynı içeriği görür. Mac yükleyicisi klasörü izler, dosyalar eşitlenince fotoğrafları GitHub’a gönderir ve Cloudflare siteyi yeniden üretir.
 
-| Nerede | Boyut | Biçim |
-|---|---|---|
-| Izgara, seri kapakları | 640 / 1280 px | AVIF + WebP (hızlı açılsın diye) |
-| Tıklayınca açılan görüntü | 2400 px | AVIF + WebP |
-| **Tam çözünürlük** (büyük ekranlar, 1:1 yakınlaştırma, tam ekran) | Gönderdiğin boyut, uzun kenar en fazla 4000 px | JPEG kalite 92, renk inceltmesi yok (4:4:4) |
-
-Görüntüleyici önce ekrana yetecek sürümü gösterir; 4K/5K ekranda ya da **1:1**'e basınca (çift tık / çift dokunuş / iki parmakla açma) tam çözünürlüğe geçer. Telefonda gereksiz yere büyük dosya indirilmez.
-
-GPS ve diğer tüm kişisel meta veriler silinir; yalnız sRGB renk profili korunur.
-
-## 1. Lightroom'dan dışa aktar
-
-- **Dosya türü:** JPEG, **kalite 95**
-- **Renk alanı:** **sRGB** (önemli, yoksa renkler bazı ekranlarda soluk görünür)
-- **Boyut:** **Uzun kenar 4000 piksel** (daha büyüğü site tarafından zaten 4000'e indirilir, sadece yüklemeyi yavaşlatır)
-- **Keskinleştirme:** Ekran için, Standart
-- **Meta veri:** "Tümü" kalabilir. GPS sitede otomatik silinir. Sadece çekim bilgisi (diyafram, enstantane, ISO, lens) ve başlık okunur.
-- **Başlık:** Lightroom'da fotoğrafa "Başlık" (Title) yazarsan sitede o görünür. Yazmazsan dosya adı kullanılır.
-
-İpucu: Bu ayarları Lightroom'da bir dışa aktarma ön ayarı olarak kaydet ("dalbaris.com").
-
-## 2. Seri klasörüne koy
-
-Her seri bir klasördür:
+Her yolculuk için ana klasörün içinde ayrı bir hikâye klasörü aç:
 
 ```
-fotograflar/
-  01_karadeniz/
-    01_ayder-sabahı_kapak.jpg   ← adında "kapak" geçen kare serinin ve sitenin kapağı olur
-    02_yayla-evleri.jpg
-    seri.txt                    ← isteğe bağlı: 1. satır seri adı, 2. satır kısa açıklama
-  02_sokak/
+dalbaris Fotoğraflar/
+  01_Fas/
+    01_marrakesh-koutoubia-minaresi.jpg
+    02_essaouira-balik-limani.jpg
+    03_essaouira-limaninda-karsilasma.jpg
+    04_essaouira-sisli-surlar_kapak.jpg
+    hikaye.txt
+  02_Japonya/
     ...
+  01-seckiden-bir-kare.jpg
 ```
 
-- Klasör ve dosya adlarının başındaki numaralar sıralama içindir, sitede görünmez.
-- En yeni çekilmiş seri sitede en üstte görünür.
+- Klasörleri doğrudan ana klasörün içine aç; hikâyelerin içine ikinci bir klasör açma.
+- Ana klasöre doğrudan koyduğun fotoğraflar **Seçkiler** grubuna eklenir.
+- Hikâye klasörünün adı varsayılan başlıktır. `hikaye.txt` kullanırsan ilk satır başlık, ikinci satır kısa açıklama olur. Eski `seri.txt` dosyaları da desteklenir.
+- Başındaki numara sıralama içindir. Kapak olacak fotoğrafın dosya adında `kapak` geçsin.
+- Fotoğraf adında kısa, anlaşılır konu adı kullan: `01_kyoto-yagmurda-sokak.jpg`. Başlık metadatası olmayan karelerde site dosya adını kullanır.
 
-## 3. Yükle
+## Lightroom ve Leica’dan ekleme
 
-**Mac'ten (en kolayı):** Masaüstündeki **dalbaris Fotoğraflar** klasörüne seri klasörünü sürükle. Mac mini her dakika bakar, yenileri kendiliğinden gönderir ve bitince bildirim gösterir. Klasörden silinen fotoğraf siteden de kalkar. DNG/HEIC gönderilmez.
+Her uygulamada dışa aktarılan dosyayı aynı yere kaydet: **Paylaş → Dosyalara Kaydet → iCloud Drive → dalbaris Fotoğraflar → hikâye klasörü**.
 
-Masaüstü klasörü yoksa (yeni Mac vb.): depodaki `scripts/mac-kur.command` dosyasını bir kez çift tıkla.
+- **Lightroom Mobile:** Paylaş → Farklı Dışa Aktar → JPG, kalite 95, renk alanı sRGB, en büyük boyut veya uzun kenar 4000 px. Filigranı kapalı bırak.
+- **Lightroom masaüstü:** Dışa aktarmada JPG, kalite 95, sRGB ve uzun kenar 4000 px seç. Daha büyük kaydedersen Mac gönderim kopyasını 4000 px’e indirir.
+- **Leica FOTOS:** DNG yerine JPG seçip Dosyalara Kaydet. Leica FOTOS DNG aktarabildiği için ham dosyayı ayrı arşivinde tut.
+- **Leica LUX / iPhone Fotoğraflar:** Paylaş → Dosyalara Kaydet. HEIC/HEIF dosyaları Mac’te JPG’ye çevrilir.
 
-**Telefondan ya da başka bilgisayardan:** GitHub'da `dalbaris` deposunu aç → `fotograflar` klasörüne gir → **Add file → Upload files** → fotoğrafları sürükle → **Commit changes**. Telefondan da yapılabilir. (GitHub sitesinden tek dosya en fazla 25 MB; 4000 px JPEG 95 bunun çok altında kalır.)
+DNG/RAW siteye gönderilmez; Lightroom’dan yüksek kaliteli JPG dışa aktar. HEIC özgünü ve büyük kaynak dosyalar iCloud’daki asıl klasörde korunur. Mac sadece geçici kopyayı dönüştürür veya 4000 px’e indirir.
 
-Bir fotoğrafı kaldırmak için GitHub'da dosyayı açıp çöp kutusu simgesine bas.
+## Site görselleri nasıl hazırlanır?
 
-Her kareye kendi bağlantısı da verilir (ör. `dalbaris.com/#kare=karadeniz-ayder-sabahi`); görüntüleyici açıkken adres çubuğundaki bağlantıyı paylaşabilirsin.
+Kaynak görselin yönü ve sRGB renkleri korunur. Sitede otomatik olarak:
+
+| Kullanım | Boyut | Biçim |
+|---|---:|---|
+| Galeri ve hikâye kapakları | 640, 1280, 2400 px | WebP |
+| Eski tarayıcı yedeği | En fazla 1600 px | JPEG |
+| Görüntüleyicide 1:1 yakınlaştırma | Uzun kenar en fazla 4000 px | JPEG, yüksek kalite |
+
+Sayfa, ekranın ihtiyacına göre uygun WebP boyutunu yükler; tam boyutlu JPEG’i yalnız 1:1 yakınlaştırmada kullanır. Site için üretilen görsellerden EXIF/GPS bilgileri silinir.
+
+Fotoğrafı veya klasörü iCloud’dan silersen site sürümü de sonraki yayında silinir. Mac ve iPhone iCloud eşitlemesi bitince gönderim birkaç dakika sürer.
 
 ---
 
