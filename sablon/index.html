@@ -42,9 +42,8 @@ nav a{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;text-decorat
 nav a:hover{color:var(--fg)}
 
 .hero{position:relative;margin-top:8px}
-.frame{position:relative;aspect-ratio:3/2;max-height:82vh;max-height:82svh;width:100%;overflow:hidden;background:radial-gradient(ellipse at 60% 40%,#3a3328,#0f0e0c 70%)}
+.frame{position:relative;aspect-ratio:2.39/1;max-width:100%;overflow:hidden;background:radial-gradient(ellipse at 60% 40%,#3a3328,#0f0e0c 70%)}
 .frame img{width:100%;height:100%;object-fit:cover;animation:in 1.6s ease both}
-.frame.dik img{object-fit:contain}
 .frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.55))}
 @keyframes in{from{opacity:.001;transform:scale(1.03)}to{opacity:1;transform:none}}
 .hero h1{position:absolute;left:0;right:0;bottom:11%;z-index:1;text-align:center;margin:0;font-weight:200;
@@ -113,6 +112,7 @@ footer a:hover{border-color:var(--accent);color:var(--fg)}
   header{padding-block:18px;row-gap:10px}
   nav{gap:14px 18px} nav a{letter-spacing:.14em;font-size:11px} nav .ig{display:none}
   section{padding-block:56px}
+  .frame{aspect-ratio:4/3}
   .hero h1{letter-spacing:.2em;padding-left:.2em}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
@@ -202,9 +202,7 @@ const kunye=k=>[k.bilgi,k.lens].filter(Boolean).join(" · ");
 
 // Açılış
 const kapak=VERI.kapak&&kareByAd[VERI.kapak];
-// Açılış karesi kendi oranıyla gösterilir (kesilmez); dikey karede ekrana sığdırılır
-if(kapak){const f=document.getElementById("heroFrame");f.style.aspectRatio=`${kapak.w}/${kapak.h}`;f.style.width=`min(100%, calc(82svh * ${(kapak.w/kapak.h).toFixed(4)}))`;f.style.marginInline="auto";if(kapak.h>kapak.w)f.classList.add("dik");
-  f.innerHTML=resim(kapak,"100vw",{alt:kapak.baslik||"Açılış karesi",eager:true});}
+if(kapak)document.getElementById("heroFrame").innerHTML=resim(kapak,"100vw",{alt:kapak.baslik||"Açılış karesi",eager:true});
 
 // Seriler
 const seriesEl=document.getElementById("seriesEl");
