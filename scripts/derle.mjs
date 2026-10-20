@@ -66,13 +66,15 @@ async function main() {
   const seriler = [];
   const klasorler = (await fs.readdir(KAYNAK, { withFileTypes: true }).catch(() => []))
     .filter(d => d.isDirectory() && !d.name.startsWith("."));
+  // Seri klasörüne konmadan doğrudan ana klasöre atılan fotoğraflar "Seçki" serisinde toplanır
+  klasorler.push({ name: "", kok: true });
 
   for (const k of klasorler) {
-    const klasor = path.join(KAYNAK, k.name);
-    const adHam = k.name.replace(/^\d+[\s._-]*/, "").replace(/[_-]+/g, " ").trim();
+    const klasor = k.kok ? KAYNAK : path.join(KAYNAK, k.name);
+    const adHam = k.kok ? "Seçki" : k.name.replace(/^\d+[\s._-]*/, "").replace(/[_-]+/g, " ").trim();
     const bilgi = await seriBilgisi(klasor, adHam.charAt(0).toLocaleUpperCase("tr-TR") + adHam.slice(1));
-    const id = slug(bilgi.ad) || slug(k.name);
-    const dosyalar = (await fs.readdir(klasor)).filter(f => UZANTILAR.has(path.extname(f).toLowerCase())).sort((a, b) => a.localeCompare(b, "tr"));
+    const id = slug(bilgi.ad) || slug(k.name) || "secki";
+    const dosyalar = (await fs.readdir(klasor, { withFileTypes: true })).filter(d => d.isFile()).map(d => d.name).filter(f => UZANTILAR.has(path.extname(f).toLowerCase())).sort((a, b) => a.localeCompare(b, "tr"));
     // Kareler paralel işlenir (çekirdek sayısı kadar), sıra korunur
     // Okunamayan bir dosya tüm yayını durdurmaz, atlanır
     const kareler = (await havuz(dosyalar, async (f, i) => { try {
