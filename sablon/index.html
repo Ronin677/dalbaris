@@ -44,10 +44,8 @@ nav a:hover{color:var(--fg)}
 .hero{position:relative;margin-top:8px}
 .frame{position:relative;aspect-ratio:2.39/1;max-width:100%;overflow:hidden;background:radial-gradient(ellipse at 60% 40%,#3a3328,#0f0e0c 70%)}
 .frame img{width:100%;height:100%;object-fit:cover;animation:in 1.6s ease both}
-.frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.55))}
 @keyframes in{from{opacity:.001;transform:scale(1.03)}to{opacity:1;transform:none}}
-.hero h1{position:absolute;left:0;right:0;bottom:11%;z-index:1;text-align:center;margin:0;font-weight:200;
-  font-size:clamp(28px,7.5vw,112px);letter-spacing:.32em;padding-left:.32em;text-shadow:0 2px 40px rgba(0,0,0,.5)}
+.gizli{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .slate{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:14px;border-bottom:1px solid var(--line);
   font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted)}
 .slate b{color:var(--accent);font-weight:400}
@@ -113,7 +111,6 @@ footer a:hover{border-color:var(--accent);color:var(--fg)}
   nav{gap:14px 18px} nav a{letter-spacing:.14em;font-size:11px} nav .ig{display:none}
   section{padding-block:56px}
   .frame{aspect-ratio:4/3}
-  .hero h1{letter-spacing:.2em;padding-left:.2em}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 </style>
@@ -133,7 +130,7 @@ footer a:hover{border-color:var(--accent);color:var(--fg)}
 
   <div class="hero" id="top">
     <div class="frame" id="heroFrame"></div>
-    <h1>BARIŞ DAL</h1>
+    <h1 class="gizli">BARIŞ DAL — Fotoğraf</h1>
   </div>
   <div class="slate">
     <span>FOTOĞRAF · YOLLAR, YERLER, İNSANLAR</span>
