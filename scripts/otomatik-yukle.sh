@@ -53,10 +53,23 @@ if [ -d "$BULUT" ]; then
                  find "$BULUT" -type f ! -name '.*' -exec stat -f '%Sf|%N' {} + 2>/dev/null | grep -E '^([^|]*,)?dataless' | cut -d'|' -f2-; } )"
   if [ -n "$BEKLEYEN" ]; then
     # brctl yeni macOS'ta hata vermeden hiçbir şey yapmayabiliyor; dosyayı okumak iCloud'u indirmeye zorlar
-    while IFS= read -r f; do brctl download "$f" >/dev/null 2>&1; cat "$f" >/dev/null 2>&1; done <<< "$BEKLEYEN"
-    gunluk "iCloud indirmesi bekleniyor: $(printf '%s\n' "$BEKLEYEN" | wc -l | tr -d ' ') dosya"
+    # Arka plan süreçleri dosyayı okuyarak indiremez (EDEADLK); indirmeyi fileproviderd'a yaptır
+    while IFS= read -r f; do
+      ( fileproviderctl materialize "$f" >/dev/null 2>&1 & )
+      brctl download "$f" >/dev/null 2>&1
+      cat "$f" >/dev/null 2>&1
+    done <<< "$BEKLEYEN"
+    ADET="$(printf '%s\n' "$BEKLEYEN" | wc -l | tr -d ' ')"
+    gunluk "iCloud indirmesi bekleniyor: $ADET dosya ($(printf '%s\n' "$BEKLEYEN" | xargs -I{} basename {} | tr '\n' ' '))"
+    # 15 dakikadan uzun sürerse bir kez haber ver
+    if [ ! -f "$DURUM/bekleme-basi" ]; then date +%s > "$DURUM/bekleme-basi"
+    elif [ $(( $(date +%s) - $(cat "$DURUM/bekleme-basi") )) -gt 900 ] && [ ! -f "$DURUM/bekleme-uyarildi" ]; then
+      bildir "iCloud dosyayı indirmiyor" "Finder'da dalbaris Fotoğraflar klasörüne sağ tıkla → İndirilmiş Olarak Tut."
+      touch "$DURUM/bekleme-uyarildi"
+    fi
     exit 0
   fi
+  rm -f "$DURUM/bekleme-basi" "$DURUM/bekleme-uyarildi"
   resimleri_say() { find "$1" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.tif' -o -iname '*.tiff' -o -iname '*.webp' \) 2>/dev/null | wc -l | tr -d ' '; }
   # Güvenlik: iCloud klasörü boş görünüyor ama sitede fotoğraf varsa hiçbir şeyi silme
   if [ "$(resimleri_say "$BULUT")" = "0" ] && [ "$(resimleri_say "$KLASOR")" != "0" ]; then
