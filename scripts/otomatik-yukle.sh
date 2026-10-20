@@ -70,7 +70,7 @@ if [ -d "$BULUT" ]; then
     exit 0
   fi
   rm -f "$DURUM/bekleme-basi" "$DURUM/bekleme-uyarildi"
-  resimleri_say() { find "$1" -type f \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.tif' -o -iname '*.tiff' -o -iname '*.webp' -o -iname '*.heic' -o -iname '*.heif' \\) 2>/dev/null | wc -l | tr -d ' '; }
+  resimleri_say() { find "$1" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.tif' -o -iname '*.tiff' -o -iname '*.webp' -o -iname '*.heic' -o -iname '*.heif' \) 2>/dev/null | wc -l | tr -d ' '; }
   # iCloud klasörü boş görünüyor ama sitede fotoğraf varsa hiçbir şeyi silme
   if [ "$(resimleri_say "$BULUT")" = "0" ] && [ "$(resimleri_say "$KLASOR")" != "0" ]; then
     gunluk "UYARI: iCloud klasörü boş görünüyor, silme yapılmadı"; exit 0
@@ -89,24 +89,24 @@ if [ -d "$BULUT" ]; then
   # Kaynağı koru: dönüştürme ve küçültme sadece geçici sahne kopyasında yapılır.
   SAHNE="$DURUM/sahne"
   mkdir -p "$SAHNE"
-  rsync -a --delete --exclude '.DS_Store' --exclude '.*.icloud' --exclude '.gitignore' --exclude '.gitkeep' --exclude 'NASIL KULLANILIR.txt' "$BULUT/" "$SAHNE/" 2>"$DURUM/rsync-sahne-hata" \\
-    || { gunluk "HATA: fotoğraf sahnesi hazırlanamadı: $(tail -3 "$DURUM/rsync-sahne-hata" | tr '\\n' ' ')"; exit 1; }
+  rsync -a --delete --exclude '.DS_Store' --exclude '.*.icloud' --exclude '.gitignore' --exclude '.gitkeep' --exclude 'NASIL KULLANILIR.txt' "$BULUT/" "$SAHNE/" 2>"$DURUM/rsync-sahne-hata" \
+    || { gunluk "HATA: fotoğraf sahnesi hazırlanamadı: $(tail -3 "$DURUM/rsync-sahne-hata" | tr '\n' ' ')"; exit 1; }
 
   # HEIC/HEIF'i sahne kopyasında JPEG'e çevir; iCloud'daki özgün dosya yerinde kalır.
-  find "$SAHNE" -type f \\( -iname '*.heic' -o -iname '*.heif' \\) 2>/dev/null | while IFS= read -r f; do
+  find "$SAHNE" -type f \( -iname '*.heic' -o -iname '*.heif' \) 2>/dev/null | while IFS= read -r f; do
     j="${f%.*}.jpg"
     if [ ! -e "$j" ]; then
-      sips -s format jpeg -s formatOptions 96 -Z "$UZUN_KENAR" "$f" --out "$j" >/dev/null 2>&1 \\
+      sips -s format jpeg -s formatOptions 96 -Z "$UZUN_KENAR" "$f" --out "$j" >/dev/null 2>&1 \
         || { rm -f "$j"; gunluk "HEIC dönüştürülemedi, kaynak iCloud'da korundu: $f"; }
     fi
     rm -f "$f"
   done
 
   # DNG/RAW kaynaklar iCloud'da kalır; web'e aktarılmaz.
-  find "$SAHNE" -type f \\( -iname '*.dng' -o -iname '*.raw' -o -iname '*.cr2' -o -iname '*.cr3' -o -iname '*.nef' -o -iname '*.arw' -o -iname '*.raf' -o -iname '*.rw2' \\) -delete 2>/dev/null
+  find "$SAHNE" -type f \( -iname '*.dng' -o -iname '*.raw' -o -iname '*.cr2' -o -iname '*.cr3' -o -iname '*.nef' -o -iname '*.arw' -o -iname '*.raf' -o -iname '*.rw2' \) -delete 2>/dev/null
 
   # Yalnız sahne kopyasındaki JPG'leri 4000 px'e indir; özgün iCloud dosyalarına dokunma.
-  find "$SAHNE" -type f \\( -iname '*.jpg' -o -iname '*.jpeg' \\) 2>/dev/null | while IFS= read -r f; do
+  find "$SAHNE" -type f \( -iname '*.jpg' -o -iname '*.jpeg' \) 2>/dev/null | while IFS= read -r f; do
     W="$(sips -g pixelWidth "$f" 2>/dev/null | awk '/pixelWidth/{print $2}')"; H="$(sips -g pixelHeight "$f" 2>/dev/null | awk '/pixelHeight/{print $2}')"
     case "$W$H" in ''|*[!0-9]*) continue ;; esac
     if [ "$W" -gt "$UZUN_KENAR" ] || [ "$H" -gt "$UZUN_KENAR" ]; then
@@ -118,16 +118,16 @@ if [ -d "$BULUT" ]; then
       fi
     fi
   done
-  rsync -a --delete --exclude '.DS_Store' --exclude '.*.icloud' --exclude '.gitignore' --exclude '.gitkeep' --exclude 'NASIL KULLANILIR.txt' "$SAHNE/" "$KLASOR/" 2>"$DURUM/rsync-hata" \\
-    || { gunluk "HATA: sahne → depo kopyalama başarısız (bir dakika sonra tekrar denenecek): $(tail -3 "$DURUM/rsync-hata" | tr '\\n' ' ')"; exit 1; }
+  rsync -a --delete --exclude '.DS_Store' --exclude '.*.icloud' --exclude '.gitignore' --exclude '.gitkeep' --exclude 'NASIL KULLANILIR.txt' "$SAHNE/" "$KLASOR/" 2>"$DURUM/rsync-hata" \
+    || { gunluk "HATA: sahne → depo kopyalama başarısız (bir dakika sonra tekrar denenecek): $(tail -3 "$DURUM/rsync-hata" | tr '\n' ' ')"; exit 1; }
 fi
 
 # RAW dosyaları korunur ama web'e gönderilmez; bir kez uyar.
-ATLANAN="$(find "$BULUT" -type f \\( -iname '*.dng' -o -iname '*.raw' -o -iname '*.cr2' -o -iname '*.cr3' -o -iname '*.nef' -o -iname '*.arw' -o -iname '*.raf' -o -iname '*.rw2' \\) 2>/dev/null)"
+ATLANAN="$(find "$BULUT" -type f \( -iname '*.dng' -o -iname '*.raw' -o -iname '*.cr2' -o -iname '*.cr3' -o -iname '*.nef' -o -iname '*.arw' -o -iname '*.raf' -o -iname '*.rw2' \) 2>/dev/null)"
 if [ -n "$ATLANAN" ]; then
   IZ="$(printf '%s' "$ATLANAN" | md5 -q)"
   if [ "$IZ" != "$(cat "$DURUM/atlanan" 2>/dev/null)" ]; then
-    ADET="$(printf '%s\\n' "$ATLANAN" | wc -l | tr -d ' ')"
+    ADET="$(printf '%s\n' "$ATLANAN" | wc -l | tr -d ' ')"
     bildir "$ADET RAW dosyası siteye gönderilmedi" "Özgün dosyalar korundu. Siteye eklemek için Lightroom'dan yüksek kaliteli JPG dışa aktarın."
     gunluk "Yalnız iCloud'da bırakılan RAW dosyalar: $ATLANAN"
     printf '%s' "$IZ" > "$DURUM/atlanan"
