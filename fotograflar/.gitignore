@@ -1,0 +1,19 @@
+# Siteye sadece bu dosya türleri gider (DNG, HEIC, video vb. gönderilmez)
+*
+!*/
+!*.jpg
+!*.JPG
+!*.jpeg
+!*.JPEG
+!*.png
+!*.PNG
+!*.tif
+!*.TIF
+!*.tiff
+!*.TIFF
+!*.webp
+!*.WEBP
+!seri.txt
+!.gitignore
+!.gitkeep
+!NASIL KULLANILIR.txt

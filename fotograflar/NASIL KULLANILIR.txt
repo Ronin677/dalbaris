@@ -1,0 +1,26 @@
+dalbaris.com — FOTOĞRAF KLASÖRÜ
+
+Bu klasöre ne koyarsan birkaç dakika içinde dalbaris.com'da görünür.
+Mac mini her dakika bakar, yenileri kendiliğinden gönderir. Bitince Mac'te bildirim çıkar.
+
+1) LIGHTROOM'DAN ÇIKAR
+   JPEG · kalite 95 · sRGB · uzun kenar 4000 piksel
+   (Bunu "dalbaris.com" adıyla dışa aktarma ön ayarı olarak kaydet.)
+   Fotoğrafa Lightroom'da "Başlık" yazarsan sitede o görünür.
+
+2) SERİ KLASÖRÜ AÇ, İÇİNE SÜRÜKLE
+   Her seri bir klasör. Örnek:
+
+     01_karadeniz/
+        01_ayder-sabahi_kapak.jpg   ← adında "kapak" geçen kare kapak olur
+        02_yayla-evleri.jpg
+        seri.txt                    ← isteğe bağlı: 1. satır seri adı, 2. satır kısa açıklama
+
+   Baştaki numaralar sadece sıralama içindir, sitede görünmez.
+   En yeni çekilen seri sitede en üstte çıkar.
+
+3) SİLMEK İÇİN
+   Fotoğrafı bu klasörden çöpe at, siteden de kalkar.
+
+Not: DNG (ham) ve HEIC dosyaları gönderilmez; Lightroom'dan JPEG çıkar.
+Bu dosya sitede görünmez.

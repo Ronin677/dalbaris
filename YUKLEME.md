@@ -46,7 +46,11 @@ fotograflar/
 
 ## 3. Yükle
 
-GitHub'da `dalbaris` deposunu aç → `fotograflar` klasörüne gir → **Add file → Upload files** → fotoğrafları sürükle → **Commit changes**. Telefondan da yapılabilir. (GitHub sitesinden tek dosya en fazla 25 MB; 4000 px JPEG 95 bunun çok altında kalır.)
+**Mac'ten (en kolayı):** Masaüstündeki **dalbaris Fotoğraflar** klasörüne seri klasörünü sürükle. Mac mini her dakika bakar, yenileri kendiliğinden gönderir ve bitince bildirim gösterir. Klasörden silinen fotoğraf siteden de kalkar. DNG/HEIC gönderilmez.
+
+Masaüstü klasörü yoksa (yeni Mac vb.): depodaki `scripts/mac-kur.command` dosyasını bir kez çift tıkla.
+
+**Telefondan ya da başka bilgisayardan:** GitHub'da `dalbaris` deposunu aç → `fotograflar` klasörüne gir → **Add file → Upload files** → fotoğrafları sürükle → **Commit changes**. Telefondan da yapılabilir. (GitHub sitesinden tek dosya en fazla 25 MB; 4000 px JPEG 95 bunun çok altında kalır.)
 
 Bir fotoğrafı kaldırmak için GitHub'da dosyayı açıp çöp kutusu simgesine bas.
 

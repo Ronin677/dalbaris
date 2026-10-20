@@ -12,7 +12,7 @@ const CIKTI = path.join(KOK, "dist");
 const GORSEL = path.join(CIKTI, "g");
 const GENISLIKLER = [640, 1280, 2400];
 const UZUN_SINIR = 4000; // tam çözünürlük sürümünün uzun kenar sınırı (piksel)
-const UZANTILAR = new Set([".jpg", ".jpeg", ".png", ".tif", ".tiff", ".webp", ".heic", ".avif"]);
+const UZANTILAR = new Set([".jpg", ".jpeg", ".png", ".tif", ".tiff", ".webp"]); // HEIC/DNG desteklenmez: Lightroom'dan JPEG çıkarılmalı
 
 const trKucuk = s => s.toLocaleLowerCase("tr-TR");
 const slug = s => trKucuk(s)
@@ -74,7 +74,8 @@ async function main() {
     const id = slug(bilgi.ad) || slug(k.name);
     const dosyalar = (await fs.readdir(klasor)).filter(f => UZANTILAR.has(path.extname(f).toLowerCase())).sort((a, b) => a.localeCompare(b, "tr"));
     // Kareler paralel işlenir (çekirdek sayısı kadar), sıra korunur
-    const kareler = await havuz(dosyalar, async (f, i) => {
+    // Okunamayan bir dosya tüm yayını durdurmaz, atlanır
+    const kareler = (await havuz(dosyalar, async (f, i) => { try {
       const kaynak = path.join(klasor, f);
       const temel = path.parse(f).name;
       let e = null;
@@ -112,7 +113,7 @@ async function main() {
         tarih: bilgiC.tarih ? bilgiC.tarih.toISOString() : null,
         kapak: /kapak/i.test(temel)
       };
-    });
+    } catch (h) { console.warn(`⚠ ATLANDI ${k.name}/${f}: ${h.message}`); return null; } })).filter(Boolean);
     if (!kareler.length) continue;
     const tarihler = kareler.map(x => x.tarih).filter(Boolean).sort();
     seriler.push({ id, ad: bilgi.ad, aciklama: bilgi.aciklama, kareler, son: tarihler.at(-1) || null, ilk: tarihler[0] || null });
