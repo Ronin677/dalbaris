@@ -42,11 +42,14 @@ function cekimBilgisi(e) {
 }
 
 async function seriBilgisi(klasor, ad) {
-  // İsteğe bağlı seri.txt: 1. satır seri adı, 2. satır kısa açıklama
-  try {
-    const [ilk = "", ikinci = ""] = (await fs.readFile(path.join(klasor, "seri.txt"), "utf8")).split(/\r?\n/).map(s => s.trim());
-    return { ad: ilk || ad, aciklama: ikinci };
-  } catch { return { ad, aciklama: "" }; }
+  // Tercihen hikaye.txt; eski seri.txt dosyaları da çalışmaya devam eder.
+  for (const dosya of ["hikaye.txt", "seri.txt"]) {
+    try {
+      const [ilk = "", ikinci = ""] = (await fs.readFile(path.join(klasor, dosya), "utf8")).split(/\r?\n/).map(s => s.trim());
+      return { ad: ilk || ad, aciklama: ikinci };
+    } catch {}
+  }
+  return { ad, aciklama: "" };
 }
 
 // Sırayı koruyarak en fazla N işi aynı anda çalıştırır
@@ -71,7 +74,7 @@ async function main() {
 
   for (const k of klasorler) {
     const klasor = k.kok ? KAYNAK : path.join(KAYNAK, k.name);
-    const adHam = k.kok ? "Seçki" : k.name.replace(/^\d+[\s._-]*/, "").replace(/[_-]+/g, " ").trim();
+    const adHam = k.kok ? "Seçkiler" : k.name.replace(/^\d+[\s._-]*/, "").replace(/[_-]+/g, " ").trim();
     const bilgi = await seriBilgisi(klasor, adHam.charAt(0).toLocaleUpperCase("tr-TR") + adHam.slice(1));
     const id = slug(bilgi.ad) || slug(k.name) || "secki";
     const dosyalar = (await fs.readdir(klasor, { withFileTypes: true })).filter(d => d.isFile()).map(d => d.name).filter(f => UZANTILAR.has(path.extname(f).toLowerCase())).sort((a, b) => a.localeCompare(b, "tr"));
