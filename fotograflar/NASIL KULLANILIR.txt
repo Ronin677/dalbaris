@@ -1,26 +1,41 @@
 dalbaris.com — FOTOĞRAF KLASÖRÜ
 
 Bu klasöre ne koyarsan birkaç dakika içinde dalbaris.com'da görünür.
-Mac mini her dakika bakar, yenileri kendiliğinden gönderir. Bitince Mac'te bildirim çıkar.
+Klasör iCloud Drive'da: Mac'in masaüstünde de, iPhone'da da aynı klasör.
+Mac mini her dakika bakar, yenileri kendiliğinden gönderir, bitince bildirim çıkar.
 
-1) LIGHTROOM'DAN ÇIKAR
-   JPEG · kalite 95 · sRGB · uzun kenar 4000 piksel
-   (Bunu "dalbaris.com" adıyla dışa aktarma ön ayarı olarak kaydet.)
-   Fotoğrafa Lightroom'da "Başlık" yazarsan sitede o görünür.
+──────── SERİ = KLASÖR ────────
+Her seri bir klasör. Örnek:
 
-2) SERİ KLASÖRÜ AÇ, İÇİNE SÜRÜKLE
-   Her seri bir klasör. Örnek:
+  01_karadeniz/
+     01_ayder-sabahi_kapak.jpg   ← adında "kapak" geçen kare kapak olur
+     02_yayla-evleri.jpg
+     seri.txt                    ← isteğe bağlı: 1. satır seri adı, 2. satır kısa açıklama
 
-     01_karadeniz/
-        01_ayder-sabahi_kapak.jpg   ← adında "kapak" geçen kare kapak olur
-        02_yayla-evleri.jpg
-        seri.txt                    ← isteğe bağlı: 1. satır seri adı, 2. satır kısa açıklama
+Baştaki numaralar sadece sıralama içindir, sitede görünmez.
+En yeni çekilen seri sitede en üstte çıkar.
 
-   Baştaki numaralar sadece sıralama içindir, sitede görünmez.
-   En yeni çekilen seri sitede en üstte çıkar.
+──────── MAC'TEN ────────
+Lightroom: JPEG · kalite 95 · sRGB · uzun kenar 4000 px ile dışa aktar,
+seri klasörüne sürükle.
 
-3) SİLMEK İÇİN
-   Fotoğrafı bu klasörden çöpe at, siteden de kalkar.
+──────── iPHONE'DAN ────────
+Hangi uygulamadan olursa olsun yol aynı:
+  Paylaş simgesi → "Dosyalara Kaydet" → iCloud Drive → dalbaris Fotoğraflar → seri klasörü → Kaydet
+(Yeni seri için o ekranda sağ üstteki klasör simgesiyle yeni klasör aç.)
 
-Not: DNG (ham) ve HEIC dosyaları gönderilmez; Lightroom'dan JPEG çıkar.
+• Lightroom (telefon): fotoğrafı aç → Paylaş → "Farklı Dışa Aktar…"
+    Dosya türü JPG · Boyut: En büyük · Kalite 95-100 · Renk alanı sRGB → ✓
+    → çıkan menüde "Dosyalara Kaydet"
+• Leica FOTOS: fotoğrafı seç → Paylaş → JPG seç → "Dosyalara Kaydet"
+• Leica LUX: fotoğrafı aç → Paylaş → "Dosyalara Kaydet"
+• Fotoğraflar uygulamasındaki bir kare: Paylaş → "Dosyalara Kaydet"
+
+Tam boy gelen fotoğraflar Mac'te otomatik olarak 4000 px'e küçültülür,
+HEIC gelirse JPEG'e çevrilir. Siteye her zaman en iyi kalite gider.
+
+──────── SİLMEK ────────
+Fotoğrafı bu klasörden sil, siteden de kalkar.
+
+Not: DNG (ham) dosyalar gönderilmez; JPEG olarak çıkar.
 Bu dosya sitede görünmez.
