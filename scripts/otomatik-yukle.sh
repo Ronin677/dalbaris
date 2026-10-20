@@ -52,7 +52,8 @@ if [ -d "$BULUT" ]; then
   BEKLEYEN="$( { find "$BULUT" -name '.*.icloud' 2>/dev/null | while IFS= read -r f; do d="$(dirname "$f")"; n="$(basename "$f")"; n="${n#.}"; echo "$d/${n%.icloud}"; done
                  find "$BULUT" -type f ! -name '.*' -exec stat -f '%Sf|%N' {} + 2>/dev/null | grep -E '^([^|]*,)?dataless' | cut -d'|' -f2-; } )"
   if [ -n "$BEKLEYEN" ]; then
-    while IFS= read -r f; do brctl download "$f" >/dev/null 2>&1 || head -c 1 "$f" >/dev/null 2>&1; done <<< "$BEKLEYEN"
+    # brctl yeni macOS'ta hata vermeden hiçbir şey yapmayabiliyor; dosyayı okumak iCloud'u indirmeye zorlar
+    while IFS= read -r f; do brctl download "$f" >/dev/null 2>&1; cat "$f" >/dev/null 2>&1; done <<< "$BEKLEYEN"
     gunluk "iCloud indirmesi bekleniyor: $(printf '%s\n' "$BEKLEYEN" | wc -l | tr -d ' ') dosya"
     exit 0
   fi
