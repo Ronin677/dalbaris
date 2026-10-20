@@ -210,6 +210,7 @@ footer a:hover{border-color:var(--accent);color:var(--fg)}
 <script>
 const VERI=/*__VERI__*/null;
 const seriAd=Object.fromEntries(VERI.seriler.map(s=>[s.id,s.ad]));
+const hikayeler=VERI.seriler.filter(s=>s.id!=="seckiler");
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const kareByAd=Object.fromEntries(VERI.kareler.map(k=>[k.ad,k]));
 function resim(k,sizes,{alt="",eager=false,cls=""}={}){
@@ -225,11 +226,8 @@ if(kapak)document.getElementById("heroFrame").innerHTML=resim(kapak,"100vw",{alt
 
 // Seriler
 const seriesEl=document.getElementById("seriesEl");
-if(!VERI.seriler.length){
-  seriesEl.outerHTML=`<div class="bos"><strong>İlk hikâyeler yakında</strong>Yeni kareler hazırlanıyor.</div>`;
-  document.getElementById("kareler").hidden=true;
-}
-VERI.seriler.forEach(s=>{
+if(!hikayeler.length)document.getElementById("seriler").hidden=true;
+hikayeler.forEach(s=>{
   const b=document.createElement("button");b.className="serie";b.type="button";
   const yil=[s.ilk,s.son].filter(Boolean).map(d=>new Date(d).getFullYear());
   const yilTxt=yil.length?(yil[0]===yil.at(-1)?yil[0]:`${yil[0]}–${yil.at(-1)}`):"";
@@ -242,7 +240,8 @@ VERI.seriler.forEach(s=>{
 // Kareler
 const filters=document.getElementById("filters"),gridEl=document.getElementById("gridEl");
 let gorunen=[];
-if(VERI.seriler.length>1)[["hepsi","Tümü"],...VERI.seriler.map(s=>[s.id,s.ad])].forEach(([id,label])=>{
+const gruplar=VERI.seriler.map(s=>[s.id,s.id==="seckiler"?"Seçkiler":s.ad]);
+if(gruplar.length>1)[["hepsi","Tümü"],...gruplar].forEach(([id,label])=>{
   const b=document.createElement("button");b.type="button";b.textContent=label;b.dataset.id=id;b.onclick=()=>setFilter(id);filters.append(b);
 });
 function setFilter(id){
