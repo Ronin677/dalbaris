@@ -42,8 +42,9 @@ nav a{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;text-decorat
 nav a:hover{color:var(--fg)}
 
 .hero{position:relative;margin-top:8px}
-.frame{position:relative;aspect-ratio:2.39/1;max-width:100%;overflow:hidden;background:radial-gradient(ellipse at 60% 40%,#3a3328,#0f0e0c 70%)}
+.frame{position:relative;aspect-ratio:3/2;max-height:82vh;max-height:82svh;width:100%;overflow:hidden;background:radial-gradient(ellipse at 60% 40%,#3a3328,#0f0e0c 70%)}
 .frame img{width:100%;height:100%;object-fit:cover;animation:in 1.6s ease both}
+.frame.dik img{object-fit:contain}
 .frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.55))}
 @keyframes in{from{opacity:.001;transform:scale(1.03)}to{opacity:1;transform:none}}
 .hero h1{position:absolute;left:0;right:0;bottom:11%;z-index:1;text-align:center;margin:0;font-weight:200;
@@ -58,7 +59,8 @@ h2{font-weight:300;font-size:clamp(28px,4vw,46px);line-height:1.1;margin:0 0 36p
 
 .series{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:28px}
 .serie{cursor:pointer;background:none;border:0;padding:0;color:inherit;text-align:left;font:inherit}
-.serie .thumb{aspect-ratio:4/5;overflow:hidden;background:var(--bg-2)}
+.series{align-items:start}
+.serie .thumb{aspect-ratio:3/2;overflow:hidden;background:var(--bg-2)}
 .serie img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.7,.2,1),filter .6s;filter:brightness(.92)}
 .serie:hover img,.serie:focus-visible img{transform:scale(1.04);filter:brightness(1.03)}
 .serie h3{font-weight:400;font-size:20px;letter-spacing:.04em;margin:16px 0 2px}
@@ -73,7 +75,7 @@ h2{font-weight:300;font-size:clamp(28px,4vw,46px);line-height:1.1;margin:0 0 36p
 .shot figcaption{position:absolute;inset:auto 0 0 0;padding:32px 14px 12px;background:linear-gradient(transparent,rgba(0,0,0,.72));
   font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:#d8d2c7;opacity:0;transition:opacity .3s}
 .shot:hover figcaption,.shot:focus-visible figcaption{opacity:1}
-@media (hover:none){.shot figcaption{opacity:1;background:linear-gradient(transparent,rgba(0,0,0,.55))}}
+@media (hover:none),(max-width:760px){.shot{background:none}.shot figcaption{position:static;opacity:1;background:none;padding:8px 2px 4px;color:var(--muted)}}
 
 .bos{border:1px solid var(--line);padding:56px 24px;text-align:center;color:var(--muted)}
 .bos strong{display:block;color:var(--fg);font-weight:300;font-size:22px;margin-bottom:6px}
@@ -112,7 +114,6 @@ footer a:hover{border-color:var(--accent);color:var(--fg)}
   nav{gap:14px 18px} nav a{letter-spacing:.14em;font-size:11px} nav .ig{display:none}
   section{padding-block:56px}
   .hero h1{letter-spacing:.2em;padding-left:.2em}
-  .frame{aspect-ratio:4/3}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 </style>
@@ -201,7 +202,9 @@ const kunye=k=>[k.bilgi,k.lens].filter(Boolean).join(" · ");
 
 // Açılış
 const kapak=VERI.kapak&&kareByAd[VERI.kapak];
-if(kapak)document.getElementById("heroFrame").innerHTML=resim(kapak,"100vw",{alt:kapak.baslik||"Açılış karesi",eager:true});
+// Açılış karesi kendi oranıyla gösterilir (kesilmez); dikey karede ekrana sığdırılır
+if(kapak){const f=document.getElementById("heroFrame");f.style.aspectRatio=`${kapak.w}/${kapak.h}`;f.style.width=`min(100%, calc(82svh * ${(kapak.w/kapak.h).toFixed(4)}))`;f.style.marginInline="auto";if(kapak.h>kapak.w)f.classList.add("dik");
+  f.innerHTML=resim(kapak,"100vw",{alt:kapak.baslik||"Açılış karesi",eager:true});}
 
 // Seriler
 const seriesEl=document.getElementById("seriesEl");
@@ -213,7 +216,8 @@ VERI.seriler.forEach(s=>{
   const b=document.createElement("button");b.className="serie";b.type="button";
   const yil=[s.ilk,s.son].filter(Boolean).map(d=>new Date(d).getFullYear());
   const yilTxt=yil.length?(yil[0]===yil.at(-1)?yil[0]:`${yil[0]}–${yil.at(-1)}`):"";
-  b.innerHTML=`<div class="thumb">${resim(kareByAd[s.kapak],"(max-width:700px) 100vw, 33vw",{alt:s.ad})}</div><h3>${esc(s.ad)}</h3><p>${[s.aciklama,yilTxt,s.adet+" kare"].filter(Boolean).map(esc).join(" · ")}</p>`;
+  const kk=kareByAd[s.kapak];
+  b.innerHTML=`<div class="thumb" style="aspect-ratio:${kk.w}/${kk.h}">${resim(kk,"(max-width:700px) 100vw, 33vw",{alt:s.ad})}</div><h3>${esc(s.ad)}</h3><p>${[s.aciklama,yilTxt,s.adet+" kare"].filter(Boolean).map(esc).join(" · ")}</p>`;
   b.onclick=()=>{setFilter(s.id);document.getElementById("kareler").scrollIntoView()};
   seriesEl.append(b);
 });
