@@ -47,11 +47,13 @@ if [ -d "$BULUT" ]; then
       gunluk "GitHub'dan gelenler iCloud klasörüne kopyalandı"
     fi
   fi
-  # iCloud bazı dosyaları henüz bu Mac'e indirmediyse indir ve bu turu bekle
-  BEKLEYEN="$(find "$BULUT" -name '.*.icloud' 2>/dev/null)"
+  # iCloud bazı dosyaları henüz bu Mac'e indirmediyse indir ve bu turu bekle.
+  # Eski macOS: ".ad.jpg.icloud" yer tutucu; yeni macOS: dosya görünür ama "dataless" bayraklıdır.
+  BEKLEYEN="$( { find "$BULUT" -name '.*.icloud' 2>/dev/null | while IFS= read -r f; do d="$(dirname "$f")"; n="$(basename "$f")"; n="${n#.}"; echo "$d/${n%.icloud}"; done
+                 find "$BULUT" -type f ! -name '.*' -exec stat -f '%Sf|%N' {} + 2>/dev/null | grep -E '^([^|]*,)?dataless' | cut -d'|' -f2-; } )"
   if [ -n "$BEKLEYEN" ]; then
-    brctl download "$BULUT" >/dev/null 2>&1
-    while IFS= read -r f; do d="$(dirname "$f")"; n="$(basename "$f")"; n="${n#.}"; brctl download "$d/${n%.icloud}" >/dev/null 2>&1; done <<< "$BEKLEYEN"
+    while IFS= read -r f; do brctl download "$f" >/dev/null 2>&1 || head -c 1 "$f" >/dev/null 2>&1; done <<< "$BEKLEYEN"
+    gunluk "iCloud indirmesi bekleniyor: $(printf '%s\n' "$BEKLEYEN" | wc -l | tr -d ' ') dosya"
     exit 0
   fi
   resimleri_say() { find "$1" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.tif' -o -iname '*.tiff' -o -iname '*.webp' \) 2>/dev/null | wc -l | tr -d ' '; }
@@ -64,13 +66,6 @@ if [ -d "$BULUT" ]; then
   ILK="$(bolcum)"
   if [ "$ILK" != "$(cat "$DURUM/son-olcum" 2>/dev/null)" ]; then
     sleep 20; [ "$ILK" != "$(bolcum)" ] && exit 0
-    # Telefondan tam boy gelenleri küçült (uzun kenar 4000 px, kalite 95) — depo hafif kalsın
-    find "$BULUT" -type f \( -iname '*.jpg' -o -iname '*.jpeg' \) -size +6M 2>/dev/null | while IFS= read -r f; do
-      W="$(sips -g pixelWidth "$f" 2>/dev/null | awk '/pixelWidth/{print $2}')"; H="$(sips -g pixelHeight "$f" 2>/dev/null | awk '/pixelHeight/{print $2}')"
-      if [ -n "$W" ] && [ -n "$H" ] && { [ "$W" -gt "$UZUN_KENAR" ] || [ "$H" -gt "$UZUN_KENAR" ]; }; then
-        sips -Z "$UZUN_KENAR" -s formatOptions 95 "$f" >/dev/null 2>&1 && gunluk "Küçültüldü: $f"
-      fi
-    done
     # Telefondan HEIC geldiyse JPEG'e çevir
     find "$BULUT" -type f \( -iname '*.heic' -o -iname '*.heif' \) 2>/dev/null | while IFS= read -r f; do
       j="${f%.*}.jpg"; [ -e "$j" ] && continue
@@ -78,8 +73,17 @@ if [ -d "$BULUT" ]; then
     done
     bolcum > "$DURUM/son-olcum"
   fi
-  rsync -a --delete --exclude '.DS_Store' --exclude '.*.icloud' --exclude '.gitignore' --exclude '.gitkeep' --exclude 'NASIL KULLANILIR.txt' "$BULUT/" "$KLASOR/" 2>/dev/null \
-    || { gunluk "HATA: iCloud → depo kopyalama başarısız"; exit 1; }
+  # Tam boy gelenleri küçült (uzun kenar 4000 px, kalite 95) — depo hafif kalsın. Her turda bakılır;
+  # okunamayan (henüz inmemiş) dosya bir sonraki turda tekrar denenir.
+  find "$BULUT" -type f \( -iname '*.jpg' -o -iname '*.jpeg' \) -size +6M 2>/dev/null | while IFS= read -r f; do
+    W="$(sips -g pixelWidth "$f" 2>/dev/null | awk '/pixelWidth/{print $2}')"; H="$(sips -g pixelHeight "$f" 2>/dev/null | awk '/pixelHeight/{print $2}')"
+    case "$W$H" in ''|*[!0-9]*) continue ;; esac
+    if [ "$W" -gt "$UZUN_KENAR" ] || [ "$H" -gt "$UZUN_KENAR" ]; then
+      sips -Z "$UZUN_KENAR" -s formatOptions 95 "$f" >/dev/null 2>&1 && gunluk "Küçültüldü: $f"
+    fi
+  done
+  rsync -a --delete --exclude '.DS_Store' --exclude '.*.icloud' --exclude '.gitignore' --exclude '.gitkeep' --exclude 'NASIL KULLANILIR.txt' "$BULUT/" "$KLASOR/" 2>"$DURUM/rsync-hata" \
+    || { gunluk "HATA: iCloud → depo kopyalama başarısız (bir dakika sonra tekrar denenecek): $(tail -3 "$DURUM/rsync-hata" | tr '\n' ' ')"; exit 1; }
 fi
 
 # Desteklenmeyen dosyalar (DNG, HEIC, video...) için bir kez uyar
